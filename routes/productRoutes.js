@@ -1,6 +1,7 @@
 const express = require('express');
 const {
     createProduct,
+    searchProducts,
     getProducts,
     getProductById,
     updateProduct,
@@ -13,6 +14,7 @@ const router = express.Router();
 router.post('/',authMiddleware, createProduct);
 router.get('/', authMiddleware, getProducts);
 router.get('/:id', authMiddleware, getProductById);
+router.get('/search', authMiddleware, searchProducts);
 router.put('/:id', authMiddleware, updateProduct);
 router.delete('/:id', authMiddleware, deleteProduct);
 

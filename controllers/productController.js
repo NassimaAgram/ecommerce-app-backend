@@ -12,6 +12,37 @@ const createProduct = async (req, res) => {
     }
 };
 
+// Recherche de produits avec pagination
+const searchProducts = async (req, res) => {
+    try {
+        const { query, category, page = 1, limit = 10 } = req.query;
+
+        // Construction du filtre de recherche
+        let filter = {};
+        if (query) {
+            filter.$text = { $search: query };
+        }
+        if (category) {
+            filter.category = category;
+        }
+
+        const products = await Product.find(filter)
+            .skip((page - 1) * limit)
+            .limit(Number(limit))
+            .exec();
+
+        const count = await Product.countDocuments(filter);
+
+        res.status(200).json({
+            products,
+            totalPages: Math.ceil(count / limit),
+            currentPage: Number(page)
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 // Get all products
 const getProducts = async (req, res) => {
     try {
@@ -62,6 +93,7 @@ const deleteProduct = async (req, res) => {
 
 module.exports = {
     createProduct,
+    searchProducts,
     getProducts,
     getProductById,
     updateProduct,
